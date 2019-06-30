@@ -131,7 +131,7 @@ class ResNet(nn.Module):
             stage_with_context_block[2], context_block_cfg)
         self.layer4 = self._make_layer(block, 512, layers[3], 2, style, 
             stage_with_context_block[3], context_block_cfg)
-        self.avgpool = nn.AdaptiveAvgPool2d(1)
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
     def _make_layer(self, block, planes, blocks, stride=1, style='pytorch', 
                     with_context_block=False, context_block_cfg=None):
@@ -162,7 +162,7 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-        x = self.avgpool(x).view(x.size(0), -1)
+        x = self.avg_pool(x).view(x.size(0), -1)
 
         return x
 

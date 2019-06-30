@@ -20,7 +20,7 @@ class ContextBlock(nn.Module):
         # context modeling
         if self.context_modeling_type == 'att':
             self.conv_mask = nn.Conv2d(inplanes, 1, kernel_size=1)
-            self.softmax = nn.Softmax(dim=1)
+            self.softmax = nn.Softmax(dim=2)
         else:
             self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
@@ -46,19 +46,25 @@ class ContextBlock(nn.Module):
         nn.init.constant_(last_conv.bias, 0)
 
     def context_modeling(self, x):
-        batch, channel, _, _ = x.size()
+        batch, channel, height, width = x.size()
         if self.context_modeling_type == 'att':
             input_x = x
             # [N, C, H * W]
-            input_x = input_x.view(batch, channel, -1)
+            input_x = input_x.view(batch, channel, height * width)
+            # [N, 1, C, H * W]
+            input_x = input_x.unsqueeze(1)
             # [N, 1, H, W]
-            context_att = self.conv_mask(x)
-            # [N, H * W]
-            context_att = self.softmax(context_att.view(batch, -1))
-            # [N, H * W, 1]
-            context_att = context_att.unsqueeze(2)
+            context_mask = self.conv_mask(x)
+            # [N, 1, H * W]
+            context_mask = context_mask.view(batch, 1, height * width)
+            # [N, 1, H * W]
+            context_mask = self.softmax(context_mask)
+            # [N, 1, H * W, 1]
+            context_mask = context_mask.unsqueeze(-1)
+            # [N, 1, C, 1]
+            context = torch.matmul(input_x, context_mask)
             # [N, C, 1, 1]
-            context = torch.matmul(input_x, context_att).unsqueeze(3)
+            context = context.view(batch, channel, 1, 1)
         else:
             # [N, C, 1, 1]
             context = self.avg_pool(x)
@@ -70,9 +76,9 @@ class ContextBlock(nn.Module):
         out = x
         fusion_term = self.transform(context)
         if self.fusion_type == 'mul':
-            out *= torch.sigmoid(fusion_term)
+            out = out * torch.sigmoid(fusion_term)
         else:
-            out += fusion_term
+            out = out + fusion_term
         return out
 
 
