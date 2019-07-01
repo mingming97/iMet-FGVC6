@@ -23,12 +23,12 @@ class IMetDataset(data.Dataset):
 
 
     def __len__(self):
-        return len(datalist)
+        return len(self.datalist)
 
 
     def __getitem__(self, idx):
         img_name, labels = self.datalist[idx]
-        target = np.zeros(1102, dtype=np.float32)
+        target = np.zeros(1103, dtype=np.float32)
         target[labels] = 1
         img = Image.open(os.path.join(self.dataroot, img_name)).convert('RGB')
         img = self.transform(img)

@@ -1,11 +1,12 @@
 from torchvision import transforms
 
 backbone = dict(
-    type='ResNet',
-    depth=50,
-    style='pytorch',
-    stage_with_context_block=[False, True, True, True],
-    context_block_cfg=dict(ratio=1./4),
+    type='DenseNet',
+    depth=121,
+    context_block_cfg=dict(
+        ratio=1./16, 
+        context_modeling_type='avg',
+        fusion_type='mul'),
     pretrained=True
 )
 
