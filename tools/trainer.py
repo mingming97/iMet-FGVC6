@@ -56,8 +56,8 @@ class Trainer:
 
     def train(self):
         for epoch in range(self.start_epoch, self.epoch):
-            self._lr_schedule(epoch)
-            self._train_one_epoch()
+            #self._lr_schedule(epoch)
+            #self._train_one_epoch()
             acc = self._validate()
             print(f'epoch {epoch} validate: score {acc:>2.3f}')
             if self.best_acc < acc:
@@ -110,6 +110,7 @@ class Trainer:
                 max_pred, _ = output.max(dim=1, keepdim=True)
                 positive_thresh = max_pred * self.validate_thresh
                 predict = (output > positive_thresh).long()
+                label = label.type_as(predict)
 
                 total_predict_positive += predict.sum().item()
                 total_target_positive += label.sum().item()
