@@ -40,6 +40,7 @@ train = dict(
 
 
 log = dict(
-    log_dir='./log',
+    log_dir='./res50_gc',
+    log_file='res50.log',
     print_frequency=20,)
 

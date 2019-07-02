@@ -23,12 +23,14 @@ class Trainer:
         self.lr_cfg = train_cfg['lr_cfg']
         self.validate_thresh = train_cfg['validate_thresh']
 
+        self.log_file = open(os.path.join(self.log_dir, log_cfg['log_file']), 'w')
+
         self.accumulate_batch_size = train_cfg.get('accumulate_batch_size', None)
         self.with_accumulate_batch = self.accumulate_batch_size is not None and self.accumulate_batch_size > 0
         if self.with_accumulate_batch:
             assert self.accumulate_batch_size > self.train_dataloader.batch_size
             assert self.accumulate_batch_size % self.train_dataloader.batch_size == 0
-            print('Using accumulate batch. Small batch size: {}. Accumulate batch size: {}'.format(
+            self._log('Using accumulate batch. Small batch size: {}. Accumulate batch size: {}'.format(
                 self.train_dataloader.batch_size, self.accumulate_batch_size))
             self.update_freq = self.accumulate_batch_size // self.train_dataloader.batch_size
             self.accu_counter = 0
@@ -40,11 +42,17 @@ class Trainer:
             model.load_state_dict(state['model_params'])
             self.start_epoch = state['epoch'] + 1
             self.best_score = state['score']
-            print('load checkpoint.\nepoch: {}    score: {}'.format(
+            self._log('load checkpoint.\nepoch: {}    score: {}'.format(
                 self.start_epoch, self.best_score))
         else:
             self.start_epoch = 0
             self.best_score = 0
+
+    def _log(self, logstr):
+        print(logstr)
+        self.log_file.write(logstr)
+        self.log_file.write('\n')
+        self.log_file.flush()
 
 
     def _lr_schedule(self, epoch):
@@ -58,9 +66,9 @@ class Trainer:
     def train(self):
         for epoch in range(self.start_epoch, self.epoch):
             self._lr_schedule(epoch)
-            self._train_one_epoch()
+            self._train_one_epoch(epoch)
             score = self._validate()
-            print('epoch: {}| validate score: {:.6f}'.format(epoch, score))
+            self._log('epoch: {} | validate score: {:.6f}'.format(epoch, score))
             if self.best_score < score:
                 self.best_score = score
                 self._save_checkpoint(epoch, score)
@@ -81,7 +89,7 @@ class Trainer:
                 self.accu_counter = 0
 
 
-    def _train_one_epoch(self):
+    def _train_one_epoch(self, epoch):
         self.model.train()
         total_loss, total_sample = 0, 0
         for i, (data, label) in enumerate(self.train_dataloader):
@@ -95,7 +103,7 @@ class Trainer:
             self._update_params(loss)
 
             if self.print_frequency != 0 and (i + 1) % self.print_frequency == 0:
-                print('small iter: {} | loss: {:.6f}'.format(i + 1, loss_value))
+                self._log('epoch: {} | small iter: {} | loss: {:.6f}'.format(epoch, i + 1, loss_value))
 
 
     def _validate(self):

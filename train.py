@@ -24,6 +24,7 @@ def main():
     args = parse_args()
 
     cfg = cfg_from_file(args.config)
+    print('using config: {}'.format(args.config))
 
     data_cfg = cfg['data']
     datalist = datalist_from_file(data_cfg['datalist_path'])
