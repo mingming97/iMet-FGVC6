@@ -39,11 +39,12 @@ class Trainer:
             state = torch.load(checkpoint)
             model.load_state_dict(state['model_params'])
             self.start_epoch = state['epoch'] + 1
-            self.best_acc = state['acc']
-            print(f'load checkpoint, epoch: {self.start_epoch}, acc: {self.best_acc}')
+            self.best_score = state['score']
+            print('load checkpoint.\nepoch: {}    score: {}'.format(
+                self.start_epoch, self.best_score))
         else:
             self.start_epoch = 0
-            self.best_acc = 0
+            self.best_score = 0
 
 
     def _lr_schedule(self, epoch):
@@ -56,13 +57,13 @@ class Trainer:
 
     def train(self):
         for epoch in range(self.start_epoch, self.epoch):
-            #self._lr_schedule(epoch)
-            #self._train_one_epoch()
-            acc = self._validate()
-            print(f'epoch {epoch} validate: score {acc:>2.3f}')
-            if self.best_acc < acc:
-                self.best_acc = acc
-                self._save_checkpoint(epoch, acc)
+            self._lr_schedule(epoch)
+            self._train_one_epoch()
+            score = self._validate()
+            print('epoch: {}| validate score: {:.6f}'.format(epoch, score))
+            if self.best_score < score:
+                self.best_score = score
+                self._save_checkpoint(epoch, score)
 
 
     def _update_params(self, loss):
@@ -120,10 +121,10 @@ class Trainer:
         score = 5 * p * r / (4 * p + r)
         return score
 
-    def _save_checkpoint(self, epoch, acc):
+    def _save_checkpoint(self, epoch, score):
         state = {
             'epoch': epoch,
-            'acc': acc,
+            'score': score,
             'model_params': self.model.state_dict()
         }
         torch.save(state, os.path.join(self.log_dir, 'checkpoint.pth'))

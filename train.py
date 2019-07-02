@@ -7,13 +7,23 @@ from dataset.utils.datalist import datalist_from_file
 from models import ResNet, DenseNet, FocalLoss, Classifier
 from tools import Trainer
 from utils import cfg_from_file
+import argparse
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='IMet FGVC6 ArgumentParser')
+    parser.add_argument('--config', default='config/res50_gc_test.py', type=str)
+    args = parser.parse_args()
+    return args
+
+
 def main():
-    cfg = cfg_from_file(r'./config/res50_gc_test.py')
+    args = parse_args()
+
+    cfg = cfg_from_file(args.config)
 
     data_cfg = cfg['data']
     datalist = datalist_from_file(data_cfg['datalist_path'])
