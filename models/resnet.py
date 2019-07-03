@@ -1,17 +1,9 @@
 import torch
 import torch.nn as nn
 from torch.hub import load_state_dict_from_url
+
+from .ops import conv1x1, conv3x3
 from .context_block import ContextBlock
-
-
-def conv3x3(in_planes, out_planes, stride=1):
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
-
-
-def conv1x1(in_planes, out_planes, stride=1):
-    return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, 
-                     bias=False)
 
 
 class BasicBlock(nn.Module):
@@ -168,11 +160,3 @@ class ResNet(nn.Module):
         x = self.avg_pool(x).view(x.size(0), -1)
 
         return x
-
-
-
-
-
-
-
-

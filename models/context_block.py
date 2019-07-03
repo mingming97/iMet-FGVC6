@@ -6,7 +6,8 @@ class ContextBlock(nn.Module):
 
     def __init__(self, inplanes, ratio,
                  context_modeling_type='att',
-                 fusion_type='add'):
+                 fusion_type='add',
+                 with_layernorm=True):
         super(ContextBlock, self).__init__()
         assert context_modeling_type in ['att', 'avg']
         assert fusion_type in ['add', 'mul']
@@ -25,13 +26,20 @@ class ContextBlock(nn.Module):
             self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
         # transform
-        self.transform = nn.Sequential(
-            nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
-            nn.LayerNorm([self.planes, 1, 1]),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(self.planes, self.inplanes, kernel_size=1)
-        )
-
+        if with_layernorm:
+            self.transform = nn.Sequential(
+                nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
+                nn.LayerNorm([self.planes, 1, 1]),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(self.planes, self.inplanes, kernel_size=1)
+            )
+        else:
+            self.transform = nn.Sequential(
+                nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(self.planes, self.inplanes, kernel_size=1)
+            )
+            
         self.reset_parameters()
 
 
