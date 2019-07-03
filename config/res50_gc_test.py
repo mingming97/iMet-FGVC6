@@ -27,20 +27,21 @@ data = dict(
                 ]),)
 
 train = dict(
-    epoch=300,
+    epoch=100,
     lr=0.01,
     weight_decay=0.0001,
     momentum=0.9,
     lr_cfg=dict(
         gamma=0.1,
-        step=[200, 250]),
+        step=[60, 80]),
     validate_thresh=1/7,
-    accumulate_batch_size=256,
+    accumulate_batch_size=1024,
+    mix_up=True,
     checkpoint=None,)
 
 
 log = dict(
-    log_dir='./res50_gc',
-    log_file='res50.log',
-    print_frequency=20,)
+    log_dir='./res50/res50_gc_mixup',
+    log_file='res50_gc_mixup.log',
+    print_frequency=50,)
 

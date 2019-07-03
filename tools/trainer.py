@@ -1,5 +1,6 @@
 import os
 import torch
+import numpy as np
 
 
 class Trainer:
@@ -22,11 +23,17 @@ class Trainer:
         self.print_frequency = log_cfg['print_frequency']
         self.lr_cfg = train_cfg['lr_cfg']
         self.validate_thresh = train_cfg['validate_thresh']
+        self.mix_up = train_cfg.get('mix_up', False)
 
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
         self.log_file = open(os.path.join(self.log_dir, log_cfg['log_file']), 'w')
 
-        self.accumulate_batch_size = train_cfg.get('accumulate_batch_size', None)
-        self.with_accumulate_batch = self.accumulate_batch_size is not None and self.accumulate_batch_size > 0
+        if self.mix_up:
+            self._log('Using mix up')
+
+        self.accumulate_batch_size = train_cfg.get('accumulate_batch_size', -1)
+        self.with_accumulate_batch = self.accumulate_batch_size > 0
         if self.with_accumulate_batch:
             assert self.accumulate_batch_size > self.train_dataloader.batch_size
             assert self.accumulate_batch_size % self.train_dataloader.batch_size == 0
@@ -50,7 +57,7 @@ class Trainer:
 
     def _log(self, logstr):
         print(logstr)
-        self.log_file.write(logstr)
+        self.log_file.write(str(logstr))
         self.log_file.write('\n')
         self.log_file.flush()
 
@@ -96,8 +103,17 @@ class Trainer:
             data = data.cuda()
             label = label.cuda()
 
-            pred = self.model(data)
-            loss = self.criterion(pred, label)
+            if self.mix_up:
+                lambda_ = np.random.beta(0.2, 0.2)
+                new_perm = torch.randperm(data.size(0))
+                mix_data = lambda_ * data + (1 - lambda_) * data[new_perm]
+                new_label = label[new_perm]
+                pred = self.model(mix_data)
+                loss = lambda_ * self.criterion(pred, label) + (1 - lambda_) * self.criterion(pred, new_label)
+            else:
+                pred = self.model(data)
+                loss = self.criterion(pred, label)
+
             loss_value = loss.item()
 
             self._update_params(loss)
