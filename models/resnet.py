@@ -47,6 +47,9 @@ class Bottleneck(nn.Module):
         assert context_block_cfg is None or isinstance(context_block_cfg, dict)
 
         self.with_context_block = context_block_cfg is not None
+        self.inplanes = inplanes
+        self.planes = planes
+        self.stride = stride
 
         self.conv1 = conv1x1(inplanes, planes)
         self.bn1 = nn.BatchNorm2d(planes)
@@ -136,8 +139,7 @@ class ResNet(nn.Module):
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
                 conv1x1(self.inplanes, planes * block.expansion, stride=stride),
-                nn.BatchNorm2d(planes * block.expansion)
-            )
+                nn.BatchNorm2d(planes * block.expansion))
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, context_block_cfg))
