@@ -4,7 +4,7 @@ from torch.utils import data
 
 from dataset import IMetDataset
 from dataset.utils.datalist import datalist_from_file
-from models import ResNet, DenseNet, FocalLoss, Classifier
+from models import ResNet, ResNeXt, DenseNet, FocalLoss, Classifier
 from tools import Trainer
 from utils import cfg_from_file
 import argparse
@@ -15,7 +15,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='IMet FGVC6 ArgumentParser')
-    parser.add_argument('--config', default='config/res50_gc_test.py', type=str)
+    parser.add_argument('--config', default='config/resnext50_gc_test.py', type=str)
     args = parser.parse_args()
     return args
 
@@ -43,6 +43,8 @@ def main():
     backbone_type = backbone_cfg.pop('type')
     if backbone_type == 'ResNet':
         backbone = ResNet(**backbone_cfg)
+    elif backbone_type == 'ResNeXt':
+        backbone = ResNeXt(**backbone_cfg)
     elif backbone_type == 'DenseNet':
         backbone = DenseNet(**backbone_cfg)
     classifier = Classifier(backbone, backbone.out_feat_dim).cuda()

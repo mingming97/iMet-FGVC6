@@ -27,20 +27,20 @@ data = dict(
                 ]),)
 
 train = dict(
-    epoch=300,
+    epoch=100,
     lr=0.01,
     weight_decay=0.0001,
     momentum=0.9,
     lr_cfg=dict(
         gamma=0.1,
-        step=[200, 250]),
+        step=[60, 80]),
     validate_thresh=1/7,
     accumulate_batch_size=256,
     checkpoint=None,)
 
 
 log = dict(
-    log_dir='./resnext50_gc',
-    log_file='resnext50.log',
-    print_frequency=20,)
+    log_dir='./work_dir/resnext50/resnext50_gc',
+    log_file='resnext50_gc.log',
+    print_frequency=50,)
 

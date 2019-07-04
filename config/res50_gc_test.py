@@ -35,7 +35,7 @@ train = dict(
         gamma=0.1,
         step=[60, 80]),
     validate_thresh=1/7,
-    accumulate_batch_size=1024,
+    accumulate_batch_size=256,
     mix_up=True,
     checkpoint=None,)
 
