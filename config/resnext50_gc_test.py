@@ -19,7 +19,6 @@ data = dict(
                                      std=[0.229, 0.224, 0.225])
                 ]),
     test_transform=transforms.Compose([
-                transforms.RandomHorizontalFlip(),
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -36,11 +35,12 @@ train = dict(
         step=[60, 80]),
     validate_thresh=1/7,
     accumulate_batch_size=256,
+    mix_up=True,
     checkpoint=None,)
 
 
 log = dict(
     log_dir='./work_dir/resnext50/resnext50_gc',
-    log_file='resnext50_gc.log',
+    log_file='resnext50_gc_mixup.log',
     print_frequency=50,)
 

@@ -21,7 +21,6 @@ data = dict(
                                      std=[0.229, 0.224, 0.225])
                 ]),
     test_transform=transforms.Compose([
-                transforms.RandomHorizontalFlip(),
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -29,20 +28,20 @@ data = dict(
                 ]),)
 
 train = dict(
-    epoch=300,
+    epoch=100,
     lr=0.01,
     weight_decay=0.0001,
     momentum=0.9,
     lr_cfg=dict(
         gamma=0.1,
-        step=[200, 250]),
+        step=[60, 80]),
     validate_thresh=1/7,
     accumulate_batch_size=256,
     checkpoint=None,)
 
 
 log = dict(
-    log_dir='./log',
-    log_file='res50.log',
-    print_frequency=20,)
+    log_dir='./work_dir/dense121/dense121_se/',
+    log_file='dense121_se.log',
+    print_frequency=50,)
 

@@ -10,12 +10,12 @@ from utils import cfg_from_file
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='IMet FGVC6 ArgumentParser')
-    parser.add_argument('--config', default='config/resnext50_gc_test.py', type=str)
+    parser.add_argument('--config', default='config/dense121_gc_test.py', type=str)
     args = parser.parse_args()
     return args
 
@@ -28,7 +28,6 @@ def main():
 
     data_cfg = cfg['data']
     datalist = datalist_from_file(data_cfg['datalist_path'])
-    random.shuffle(datalist)
     num_train_files = len(datalist) // 5 * 4
     train_dataset = IMetDataset(data_cfg['dataset_path'],
                                 datalist[:num_train_files],
