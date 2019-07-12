@@ -35,11 +35,12 @@ train = dict(
         step=[60, 80]),
     validate_thresh=1/7,
     accumulate_batch_size=256,
+    mixup=True,
     checkpoint=None,)
 
 
 log = dict(
-    log_dir='./work_dir/dense121/dense121_gc',
-    log_file='dense121_gc.log',
+    log_dir='./work_dir/dense121/dense121_gc_mixup',
+    log_file='dense121_gc_mixup.log',
     print_frequency=50,)
 

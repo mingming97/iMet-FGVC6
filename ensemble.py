@@ -9,7 +9,7 @@ import argparse
 import random
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
 
 def parse_args():

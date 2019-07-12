@@ -10,7 +10,7 @@ from utils import cfg_from_file
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '4'
+os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 
 def parse_args():

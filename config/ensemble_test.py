@@ -25,8 +25,8 @@ net_cfgs = [
 ]
 
 data = dict(
-    dataset_path='/home1/liangjianming/imet-2019-fgvc6/train',
-    datalist_path='/home1/liangjianming/imet-2019-fgvc6/train.csv',
+    dataset_path='/home1/liangjianming/imet-2019-fgvc6/test',
+    datalist_path='/home1/liangjianming/imet-2019-fgvc6/test.csv',
     batch_size=512,
     test_transform=transforms.Compose([
                 transforms.Resize((224, 224)),
