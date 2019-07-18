@@ -15,7 +15,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='IMet FGVC6 ArgumentParser')
-    parser.add_argument('--config', default='config/dense121_gc_test.py', type=str)
+    parser.add_argument('--config', type=str, default='config/dense121_gc.py')
     args = parser.parse_args()
     return args
 
@@ -49,7 +49,7 @@ def main():
     classifier = Classifier(backbone, backbone.out_feat_dim).cuda()
 
     train_cfg, log_cfg = cfg['train'], cfg['log']
-    criterion = FocalLoss().cuda()
+    criterion = FocalLoss()
     optimizer = torch.optim.SGD(classifier.parameters(), lr=train_cfg['lr'],
                                 weight_decay=train_cfg['weight_decay'], momentum=train_cfg['momentum'])
     trainer = Trainer(
@@ -64,4 +64,5 @@ def main():
 
 
 if __name__ == '__main__':
+    torch.backends.cudnn.benchmark = True
     main()
